@@ -56,8 +56,21 @@ public:
     // # Safak Onol
     static juce::AudioProcessorValueTreeState::ParameterLayout CreateParameterLayout();
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", CreateParameterLayout() };
-
+    // #-- Safak Onol
 private:
+
+    // # Safak Onol
+    
+    using Filter = juce::dsp::IIR::Filter<float>; // IIR:Filter has a 12 db/Oct response when configured as low pass or highpass
+                                                  
+    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>; // If we need a chain with a response of 48 db/Oct, then we need to define 4 filters
+
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>; // MonoChain: LowCut -> Parametric -> HighCut
+
+    MonoChain leftChain, rightChain; // filter instances to create Stereo
+
+    // #-- Safak Onol
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EQlzrAudioProcessor)
 };
